@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boldmente — Sistemas, automatizaciones y landings con IA</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-70EET15M49"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-70EET15M49');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --negro: #0A0A0A;
+    --lima: #E8FF47;
+    --verde: #1A7A3C;
+    --hueso: #F5F5F0;
+    --gris: #888;
+    --borde: rgba(255,255,255,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--negro);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+
+
+  /* nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 2.5rem;
+    border-bottom: 0.5px solid var(--borde);
+    backdrop-filter: blur(12px);
+    background: rgba(10,10,10,0.85);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-decoration: none;
+  }
+  .logo span { color: var(--lima); }
+
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #fff; }
+
+  .nav-cta {
+    background: var(--lima);
+    color: var(--negro);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 2.5rem 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,255,71,0.1);
+    border: 0.5px solid rgba(232,255,71,0.3);
+    color: var(--lima);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    width: fit-content;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--lima);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 8vw, 7rem);
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    margin-bottom: 2rem;
+    max-width: 900px;
+  }
+
+  .hero-title .accent { color: var(--lima); }
+  .hero-title .outline {
+    -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: rgba(255,255,255,0.5);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  .hero-actions {
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--lima);
+    color: var(--negro);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 14px 28px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: transform 0.15s, opacity 0.15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  .btn-ghost {
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.2s;
+  }
+  .btn-ghost:hover { color: #fff; }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2rem; left: 2.5rem;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .hero-scroll::before {
+    content: '';
+    width: 24px; height: 0.5px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* servicios */
+  .section {
+    padding: 6rem 2.5rem;
+    border-top: 0.5px solid var(--borde);
+  }
+
+  .section-tag {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lima);
+    margin-bottom: 1rem;
+  }
+
+  .servicios-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6rem;
+    margin-bottom: 4rem;
+  }
+
+  .servicios-aside {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .servicios-emoji-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .servicios-emoji-sep {
+    font-size: clamp(4rem, 8vw, 8rem);
+    color: rgba(255,255,255,0.4);
+    align-self: flex-start;
+    line-height: 1;
+  }
+
+  .servicios-emojis {
+    font-size: clamp(4rem, 8vw, 8rem);
+    line-height: 1;
+  }
+
+  .servicios-claim {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+    margin-top: 0.75rem;
+  }
+
+  .servicios-claim strong {
+    color: var(--lima);
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 0;
+    max-width: 600px;
+  }
+
+  .servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--borde);
+    border: 0.5px solid var(--borde);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .servicio-card {
+    background: var(--negro);
+    padding: 2.5rem 2rem;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .servicio-card:hover { background: #111; }
+
+  .servicio-num {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+  }
+
+  .servicio-icon {
+    width: 36px; height: 36px;
+    border: 0.5px solid rgba(232,255,71,0.3);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .servicio-icon svg { width: 18px; height: 18px; }
+
+  .servicio-nombre {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .servicio-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+  }
+
+  .servicio-tag {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-size: 11px;
+    color: var(--lima);
+    background: rgba(232,255,71,0.08);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  /* para quién */
+  .para-quien-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 3rem;
+  }
+
+  .cliente-card {
+    border: 0.5px solid var(--borde);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .cliente-card:hover {
+    border-color: rgba(232,255,71,0.3);
+    background: rgba(232,255,71,0.03);
+  }
+
+  .cliente-icon {
+    font-size: 24px;
+    margin-bottom: 0.75rem;
+  }
+
+  .cliente-nombre {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 0.4rem;
+  }
+
+  .cliente-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.5;
+  }
+
+  /* cómo funciona */
+  .proceso-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 640px;
+    margin-top: 3rem;
+  }
+
+  .proceso-step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    border-bottom: 0.5px solid var(--borde);
+    position: relative;
+  }
+
+  .paso-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--lima);
+    padding-top: 2px;
+  }
+
+  .paso-content {}
+
+  .paso-titulo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 0.4rem;
+  }
+
+  .paso-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+  }
+
+  /* quienes somos */
+  .nosotros-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  @media (max-width: 700px) {
+    .nosotros-inner { grid-template-columns: 1fr; gap: 2rem; }
+  }
+
+  .nosotros-tagline {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+
+  .nosotros-tagline .lima { color: var(--lima); }
+
+  .nosotros-texto {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .nosotros-empresas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 0.5rem;
+  }
+
+  .empresas-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .empresa-badge {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.02em;
+  }
+
+  .empresa-badge + .empresa-badge::before {
+    content: '·';
+    margin-right: 12px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  .nosotros-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .stat-box {
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .stat-box:first-child {
+    grid-column: span 2;
+    background: rgba(232,255,71,0.04);
+    border-color: rgba(232,255,71,0.15);
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
+    letter-spacing: -0.03em;
+    color: var(--lima);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.4;
+  }
+
+  /* cta final */
+  .cta-section {
+    padding: 6rem 2.5rem;
+    border-top: 0.5px solid var(--borde);
+    text-align: center;
+  }
+
+  .contacto-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 560px;
+    margin: 2.5rem auto 0;
+    text-align: left;
+  }
+
+  .contacto-form input,
+  .contacto-form textarea,
+  .contacto-form select {
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .contacto-form input::placeholder,
+  .contacto-form textarea::placeholder {
+    color: rgba(255,255,255,0.25);
+  }
+
+  .contacto-form input:focus,
+  .contacto-form textarea:focus,
+  .contacto-form select:focus {
+    border-color: rgba(232,255,71,0.4);
+  }
+
+  .contacto-form select option {
+    background: #1a1a1a;
+    color: #fff;
+  }
+
+  .contacto-form textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .contacto-form button {
+    background: var(--lima);
+    color: var(--negro);
+    border: none;
+    border-radius: 6px;
+    padding: 1rem 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .contacto-form button:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
+  }
+
+  .contacto-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 560px;
+    margin: 2.5rem auto 0;
+    padding: 2.5rem;
+    border: 0.5px solid rgba(232,255,71,0.3);
+    border-radius: 8px;
+    background: rgba(232,255,71,0.04);
+  }
+
+  .contacto-success-icon {
+    font-size: 2rem;
+    color: var(--lima);
+  }
+
+  .contacto-success p {
+    color: rgba(255,255,255,0.7);
+    font-size: 15px;
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  .cta-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-title .lima { color: var(--lima); }
+
+  .cta-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 3rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  .cta-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--lima);
+    color: var(--negro);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 16px 36px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+  .cta-contact:hover { transform: translateY(-3px); opacity: 0.9; }
+
+  .contact-options {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-opt {
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .contact-opt a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .contact-opt a:hover { color: var(--lima); }
+
+  /* footer */
+  footer {
+    border-top: 0.5px solid var(--borde);
+    padding: 2rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .footer-logo span { color: var(--lima); }
+
+  .footer-copy {
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+  }
+
+  /* animaciones de entrada */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* mobile */
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    .hero { padding: 7rem 1.25rem 4rem; }
+    .section { padding: 4rem 1.25rem; }
+    .cta-section { padding: 4rem 1.25rem; }
+    footer { padding: 1.5rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">Bold<span>mente</span></a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#para-quien">Para quién</a></li>
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#nosotros">Quiénes somos</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Contactar →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+
+  <h1 class="hero-title">
+    Tu negocio<br>
+    <span class="accent">funcionando.</span><br>
+    <span class="outline">Sin vueltas.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Sistemas, automatizaciones y landings.<br>
+    Rápido, directo y listo para usar desde el día uno.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#contacto" class="btn-primary">Quiero saber más →</a>
+    <a href="#servicios" class="btn-ghost">Ver servicios ↓</a>
+  </div>
+
+
+</section>
+
+<!-- SERVICIOS -->
+<section class="section" id="servicios">
+  <p class="section-tag">Qué hacemos</p>
+  <div class="servicios-header">
+    <h2 class="section-title">Todo lo que tu negocio necesita para funcionar.</h2>
+    <div class="servicios-aside">
+      <div class="servicios-emoji-col">
+        <div class="servicios-emojis">🚀</div>
+        <p class="servicios-claim"><strong>bold</strong></p>
+      </div>
+      <div class="servicios-emoji-sep">+</div>
+      <div class="servicios-emoji-col">
+        <div class="servicios-emojis">🧠</div>
+        <p class="servicios-claim"><strong>mente</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="servicios-grid">
+
+    <div class="servicio-card fade-in">
+      <div class="servicio-num">01</div>
+      <div class="servicio-icon">
+        <svg viewBox="0 0 18 18" fill="none" stroke="#E8FF47" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="14" height="11" rx="2"/>
+          <path d="M6 15h6M9 14v1"/>
+        </svg>
+      </div>
+      <div class="servicio-nombre">Landings & webs</div>
+      <div class="servicio-desc">Páginas que convierten visitas en clientes. Diseñadas para que la gente entienda en 5 segundos qué hacés y por qué contactarte.</div>
+      <div class="servicio-tag">Desde 1 semana</div>
+    </div>
+
+    <div class="servicio-card fade-in">
+      <div class="servicio-num">02</div>
+      <div class="servicio-icon">
+        <svg viewBox="0 0 18 18" fill="none" stroke="#E8FF47" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9h3l2-6 3 12 2-6h2"/>
+        </svg>
+      </div>
+      <div class="servicio-nombre">Automatizaciones</div>
+      <div class="servicio-desc">Tareas que hacés a mano y podrían hacerse solas. Turnos, respuestas, reportes, notificaciones, facturación — sin tocar nada.</div>
+      <div class="servicio-tag">Ahorrás horas por semana</div>
+    </div>
+
+    <div class="servicio-card fade-in">
+      <div class="servicio-num">03</div>
+      <div class="servicio-icon">
+        <svg viewBox="0 0 18 18" fill="none" stroke="#E8FF47" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h10v10H4z"/>
+          <path d="M4 8h10M8 4v10"/>
+        </svg>
+      </div>
+      <div class="servicio-nombre">Armado de sistemas</div>
+      <div class="servicio-desc">CRMs, bases de datos, paneles de control, integraciones entre apps. La infraestructura que necesitás para operar en serio.</div>
+      <div class="servicio-tag">A medida de tu operación</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PARA QUIÉN -->
+<section class="section" id="para-quien">
+  <p class="section-tag">Para quién</p>
+  <h2 class="section-title">Si tenés un negocio, esto es para vos.</h2>
+
+  <div class="para-quien-grid">
+    <div class="cliente-card fade-in">
+      <div class="cliente-icon">🚀</div>
+      <div class="cliente-nombre">Startups y emprendedores</div>
+      <div class="cliente-desc">Landing para validar, sistema para operar, automatización para escalar.</div>
+    </div>
+    <div class="cliente-card fade-in">
+      <div class="cliente-icon">🏪</div>
+      <div class="cliente-nombre">Locales con sucursales</div>
+      <div class="cliente-desc">Todo centralizado: ventas, stock y equipo desde un solo lugar.</div>
+    </div>
+    <div class="cliente-card fade-in">
+      <div class="cliente-icon">💼</div>
+      <div class="cliente-nombre">Freelancers y profesionales</div>
+      <div class="cliente-desc">Presencia online, captación de clientes y procesos automatizados.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section class="section" id="como-funciona">
+  <p class="section-tag">Cómo funciona</p>
+  <h2 class="section-title">Sin reuniones eternas ni presupuestos que nunca llegan.</h2>
+
+  <div class="proceso-list">
+    <div class="proceso-step fade-in">
+      <div class="paso-num">01</div>
+      <div class="paso-content">
+        <div class="paso-titulo">Me contás qué necesitás</div>
+        <div class="paso-desc">Una charla de 15 minutos por WhatsApp o mail. Sin formularios, sin esperas.</div>
+      </div>
+    </div>
+    <div class="proceso-step fade-in">
+      <div class="paso-num">02</div>
+      <div class="paso-content">
+        <div class="paso-titulo">Te paso un presupuesto claro</div>
+        <div class="paso-desc">Qué incluye, cuánto cuesta y cuándo lo tenés. Sin letra chica.</div>
+      </div>
+    </div>
+    <div class="proceso-step fade-in">
+      <div class="paso-num">03</div>
+      <div class="paso-content">
+        <div class="paso-titulo">Lo armamos y lo entregamos</div>
+        <div class="paso-desc">Rápido. Con pruebas incluidas. Y si algo no funciona, lo resolvemos.</div>
+      </div>
+    </div>
+    <div class="proceso-step fade-in">
+      <div class="paso-num">04</div>
+      <div class="paso-content">
+        <div class="paso-titulo">Queda funcionando</div>
+        <div class="paso-desc">No te dejamos con algo a medio armar. Listo para usar desde el primer día.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIÉNES SOMOS -->
+<section class="section" id="nosotros">
+  <p class="section-tag">Quiénes somos</p>
+  <div class="nosotros-inner">
+    <div>
+      <h2 class="nosotros-tagline">Experiencia de empresa grande.<br><span class="lima">Velocidad de startup.</span></h2>
+      <p class="nosotros-texto">
+        Somos el equipo detrás de Boldmente. Venimos de Ualá, Mercado Libre y Telecom Argentina — sabemos cómo se mueven los negocios reales, qué falla, y qué hay que resolver rápido.
+      </p>
+      <p class="nosotros-texto">
+        Desarrollamos con un proceso y herramientas modernas que comprimen meses de trabajo en días. No porque cortemos esquinas, sino porque encontramos una forma de trabajar que es más rápida y más precisa al mismo tiempo. El resultado es software hecho a medida, con iteraciones cortas, que queda funcionando de verdad.
+      </p>
+      <p class="nosotros-texto">
+        El nombre lo dice todo: <strong>bold</strong> en inglés es audaz, ágil, sin miedo a arrancar. <strong>Mente</strong> porque si bien juntos forman "ágilmente", nada de lo que hacemos es al azar — cada decisión tiene cabeza detrás. Boldmente es exactamente eso: moverse rápido, pero pensar bien.
+      </p>
+    </div>
+    <div class="nosotros-stats">
+      <div class="stat-box">
+        <div class="stat-num">+15</div>
+        <div class="stat-label">años de experiencia en el ecosistema tech latinoamericano</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">días</div>
+        <div class="stat-label">lo que antes tardaba semanas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section" id="contacto">
+  <h2 class="cta-title">¿Listo para<br><span class="lima">boldmente?</span></h2>
+  <p class="cta-sub">Contanos qué necesitás. Te respondemos en menos de 24 horas.</p>
+
+  <form class="contacto-form" id="contacto-form">
+    <input type="text" name="nombre" placeholder="Tu nombre" required>
+    <input type="email" name="email" placeholder="Tu email" required>
+    <select name="servicio">
+      <option value="" disabled selected>¿Qué necesitás?</option>
+      <option value="landing">Landing / web</option>
+      <option value="automatizacion">Automatización</option>
+      <option value="sistema">Sistema a medida</option>
+      <option value="otro">Otro</option>
+    </select>
+    <textarea name="mensaje" placeholder="Contanos un poco más sobre tu proyecto..." required></textarea>
+    <button type="submit">Enviar mensaje →</button>
+  </form>
+  <div class="contacto-success" id="contacto-success">
+    <span class="contacto-success-icon">✓</span>
+    <p>Recibimos tu mensaje.<br>En breve te contactamos.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Bold<span>mente</span></div>
+  <div class="footer-copy">© 2025 Boldmente — Sistemas, automatizaciones y landings con IA.</div>
+</footer>
+
+<script>
+  const form = document.getElementById('contacto-form');
+  const success = document.getElementById('contacto-success');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const data = new FormData(form);
+    const response = await fetch('https://formspree.io/f/meepjkwp', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (response.ok) {
+      form.style.display = 'none';
+      success.style.display = 'flex';
+    }
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => {
+    if (el.getBoundingClientRect().top < window.innerHeight) {
+      el.classList.add('visible');
+    } else {
+      observer.observe(el);
+    }
+  });
+</script>
+
+</body>
+</html>
