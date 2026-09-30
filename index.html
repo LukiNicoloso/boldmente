@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Boldmente — Sistemas a medida para tu negocio</title>
 <meta name="description" content="Armamos sistemas a medida para tu negocio: CRMs, paneles de control, bases de datos e integraciones pensados para cómo trabajás. Rápido, directo y listo para usar desde el día uno.">
+<link rel="canonical" href="https://www.boldmente.com.ar/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.boldmente.com.ar/">
 <meta property="og:title" content="Boldmente — Sistemas a medida para tu negocio">
@@ -16,6 +17,19 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#0A0A0A">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Boldmente",
+  "url": "https://www.boldmente.com.ar/",
+  "logo": "https://www.boldmente.com.ar/apple-touch-icon.png",
+  "image": "https://www.boldmente.com.ar/og-image.png",
+  "description": "Sistemas a medida para tu negocio: CRMs, paneles de control, bases de datos, integraciones, automatizaciones y landings.",
+  "areaServed": { "@type": "Country", "name": "Argentina" },
+  "inLanguage": "es-AR"
+}
+</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-70EET15M49"></script>
 <script>
@@ -952,6 +966,7 @@
       headers: { 'Accept': 'application/json' }
     });
     if (response.ok) {
+      gtag('event', 'generate_lead', { servicio: data.get('servicio') || 'sin_especificar' });
       form.style.display = 'none';
       success.style.display = 'flex';
     }
