@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo CRM de ventas — Boldmente</title>
+<meta name="description" content="Demo interactiva de un CRM a medida hecho por Boldmente. Datos ficticios.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;600;700&family=Syne:wght@800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../demo.css">
+<style>
+  .marca-icono { background: var(--acento); }
+
+  .barra { display: flex; gap: 8px; flex-wrap: wrap; }
+  .barra .input { width: 220px; }
+
+  .tablero {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(190px, 1fr));
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .columna {
+    background: #ECEEE9;
+    border-radius: var(--radio);
+    padding: 10px;
+    min-height: 320px;
+    transition: background 0.15s;
+  }
+  .columna.sobre { background: #DDE3F8; }
+  .col-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 2px 4px 10px;
+  }
+  .col-head strong { font-size: 13px; }
+  .col-head span { font-size: 12px; color: var(--suave); }
+  .col-total { font-size: 12px; color: var(--suave); padding: 0 4px 8px; }
+
+  .lead {
+    background: var(--panel);
+    border: 1px solid var(--linea);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: grab;
+    transition: box-shadow 0.15s;
+  }
+  .lead:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  .lead.arrastrando { opacity: 0.4; }
+  .lead-nombre { font-weight: 600; }
+  .lead-empresa { color: var(--suave); font-size: 12px; }
+  .lead-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .lead-valor { font-weight: 700; font-size: 13px; }
+  .avatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+  }
+
+  .detalle-notas { list-style: none; margin: 8px 0 12px; display: flex; flex-direction: column; gap: 6px; }
+  .detalle-notas li { background: var(--bg); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+  .detalle-notas small { color: var(--suave); display: block; font-size: 11px; }
+  .detalle-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .detalle-meta div { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+  .detalle-meta small { color: var(--suave); font-size: 11px; display: block; }
+  .mover { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <div class="info">
+    <a href="/" class="logo">Bold<span>mente</span></a>
+    <span class="pill">Demo</span>
+    <span>CRM de ventas · datos ficticios, podés tocar todo</span>
+  </div>
+  <div class="acciones">
+    <button id="demo-reset">Reiniciar demo</button>
+    <a class="cta" href="/#contacto">Quiero uno así →</a>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="marca"><div class="marca-icono">◆</div>Distribuidora Norte</div>
+    <ul class="menu">
+      <li>Inicio</li>
+      <li class="activo">Oportunidades</li>
+      <li>Clientes</li>
+      <li>Tareas</li>
+      <li>Reportes</li>
+      <li>Configuración</li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="encabezado">
+      <div>
+        <h1>Oportunidades</h1>
+        <p>Arrastrá las tarjetas entre etapas o tocá una para ver el detalle.</p>
+      </div>
+      <div class="barra">
+        <input class="input" id="buscar" type="search" placeholder="Buscar cliente o empresa…">
+        <button class="btn" id="nuevo">+ Nueva oportunidad</button>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+    <div class="tablero" id="tablero"></div>
+  </main>
+</div>
+
+<!-- nueva oportunidad -->
+<div class="modal-fondo" id="modal-nuevo">
+  <form class="modal" id="form-nuevo">
+    <h3>Nueva oportunidad</h3>
+    <div class="campo"><label>Contacto</label><input class="input" name="nombre" required placeholder="Ej: Laura Gómez"></div>
+    <div class="campo"><label>Empresa</label><input class="input" name="empresa" required placeholder="Ej: Almacén El Sol"></div>
+    <div class="campo"><label>Valor estimado ($)</label><input class="input" name="valor" type="number" min="0" step="1000" required placeholder="250000"></div>
+    <div class="campo"><label>Vendedor</label>
+      <select class="input" name="vendedor"></select>
+    </div>
+    <div class="modal-acciones">
+      <button type="button" class="btn sec" data-cerrar="modal-nuevo">Cancelar</button>
+      <button class="btn">Crear</button>
+    </div>
+  </form>
+</div>
+
+<!-- detalle -->
+<div class="modal-fondo" id="modal-detalle">
+  <div class="modal" id="detalle"></div>
+</div>
+
+<script src="../demo.js"></script>
+<script>
+  const CLAVE = 'boldmente-demo-crm';
+
+  const ETAPAS = [
+    { id: 'nuevo', nombre: 'Nuevo' },
+    { id: 'contactado', nombre: 'Contactado' },
+    { id: 'propuesta', nombre: 'Propuesta enviada' },
+    { id: 'ganado', nombre: 'Ganado' },
+    { id: 'perdido', nombre: 'Perdido' },
+  ];
+
+  const VENDEDORES = {
+    MR: { nombre: 'Martina R.', color: '#2F54EB' },
+    JP: { nombre: 'Juan P.', color: '#16A34A' },
+    SL: { nombre: 'Sofía L.', color: '#D97706' },
+  };
+
+  const INICIAL = [
+    { id: 1, nombre: 'Laura Gómez', empresa: 'Almacén El Sol', valor: 320000, etapa: 'nuevo', vendedor: 'MR', notas: [] },
+    { id: 2, nombre: 'Diego Ferreyra', empresa: 'Kiosco 24 Horas', valor: 85000, etapa: 'nuevo', vendedor: 'JP', notas: [] },
+    { id: 3, nombre: 'Carla Benítez', empresa: 'Supermercado Don José', valor: 1450000, etapa: 'contactado', vendedor: 'SL', notas: [{ texto: 'Pidió lista de precios mayorista.', fecha: 'Ayer' }] },
+    { id: 4, nombre: 'Martín Ríos', empresa: 'Restó La Esquina', valor: 540000, etapa: 'contactado', vendedor: 'MR', notas: [] },
+    { id: 5, nombre: 'Ana Suárez', empresa: 'Hotel Patagonia', valor: 2100000, etapa: 'propuesta', vendedor: 'JP', notas: [{ texto: 'Propuesta enviada con 10% de descuento por volumen.', fecha: 'Hace 3 días' }] },
+    { id: 6, nombre: 'Pablo Medina', empresa: 'Café Martina', valor: 410000, etapa: 'propuesta', vendedor: 'SL', notas: [] },
+    { id: 7, nombre: 'Lucía Torres', empresa: 'Dietética Natural', valor: 260000, etapa: 'ganado', vendedor: 'MR', notas: [{ texto: 'Firmó. Primera entrega el lunes.', fecha: 'Hace 1 semana' }] },
+    { id: 8, nombre: 'Ezequiel Paz', empresa: 'Minimercado Centro', valor: 690000, etapa: 'ganado', vendedor: 'JP', notas: [] },
+    { id: 9, nombre: 'Romina Díaz', empresa: 'Panadería San Martín', valor: 150000, etapa: 'perdido', vendedor: 'SL', notas: [{ texto: 'Eligió otro proveedor por precio.', fecha: 'Hace 2 semanas' }] },
+  ];
+
+  let leads = Demo.cargar(CLAVE, INICIAL);
+  let filtro = '';
+  Demo.reinicio(CLAVE);
+
+  const guardar = () => Demo.guardar(CLAVE, leads);
+
+  function renderKpis() {
+    const abiertos = leads.filter(l => !['ganado', 'perdido'].includes(l.etapa));
+    const ganados = leads.filter(l => l.etapa === 'ganado');
+    const cerrados = leads.filter(l => ['ganado', 'perdido'].includes(l.etapa));
+    const tasa = cerrados.length ? Math.round(ganados.length / cerrados.length * 100) : 0;
+    const kpis = [
+      { label: 'Oportunidades abiertas', valor: abiertos.length },
+      { label: 'Valor en pipeline', valor: Demo.pesos(abiertos.reduce((s, l) => s + l.valor, 0)) },
+      { label: 'Vendido este mes', valor: Demo.pesos(ganados.reduce((s, l) => s + l.valor, 0)) },
+      { label: 'Tasa de cierre', valor: tasa + '%' },
+    ];
+    document.getElementById('kpis').innerHTML = kpis.map(k =>
+      `<div class="kpi"><div class="label">${k.label}</div><div class="valor">${k.valor}</div></div>`
+    ).join('');
+  }
+
+  function tarjeta(l) {
+    const v = VENDEDORES[l.vendedor];
+    return `<div class="lead" draggable="true" data-id="${l.id}">
+      <div class="lead-nombre">${Demo.esc(l.nombre)}</div>
+      <div class="lead-empresa">${Demo.esc(l.empresa)}</div>
+      <div class="lead-pie">
+        <span class="lead-valor">${Demo.pesos(l.valor)}</span>
+        <span class="avatar" style="background:${v.color}" title="${v.nombre}">${l.vendedor}</span>
+      </div>
+    </div>`;
+  }
+
+  function renderTablero() {
+    const q = filtro.toLowerCase();
+    const visibles = leads.filter(l => !q || (l.nombre + ' ' + l.empresa).toLowerCase().includes(q));
+    document.getElementById('tablero').innerHTML = ETAPAS.map(e => {
+      const items = visibles.filter(l => l.etapa === e.id);
+      const total = items.reduce((s, l) => s + l.valor, 0);
+      return `<div class="columna" data-etapa="${e.id}">
+        <div class="col-head"><strong>${e.nombre}</strong><span>${items.length}</span></div>
+        <div class="col-total">${Demo.pesos(total)}</div>
+        ${items.map(tarjeta).join('')}
+      </div>`;
+    }).join('');
+  }
+
+  function render() { renderKpis(); renderTablero(); }
+
+  function moverLead(id, etapa) {
+    const l = leads.find(x => x.id === id);
+    if (!l || l.etapa === etapa) return;
+    l.etapa = etapa;
+    const nombreEtapa = ETAPAS.find(e => e.id === etapa).nombre;
+    l.notas.unshift({ texto: `Movido a "${nombreEtapa}".`, fecha: 'Recién' });
+    guardar();
+    render();
+    if (etapa === 'ganado') Demo.toast(`🎉 ¡Venta cerrada con ${l.empresa}! Se notificó al equipo.`);
+    else Demo.toast(`${l.empresa} → ${nombreEtapa}`);
+  }
+
+  // arrastrar y soltar
+  const tablero = document.getElementById('tablero');
+  tablero.addEventListener('dragstart', e => {
+    const card = e.target.closest('.lead');
+    if (!card) return;
+    e.dataTransfer.setData('text/plain', card.dataset.id);
+    card.classList.add('arrastrando');
+  });
+  tablero.addEventListener('dragend', e => {
+    e.target.closest('.lead')?.classList.remove('arrastrando');
+  });
+  tablero.addEventListener('dragover', e => {
+    const col = e.target.closest('.columna');
+    if (!col) return;
+    e.preventDefault();
+    tablero.querySelectorAll('.columna').forEach(c => c.classList.toggle('sobre', c === col));
+  });
+  tablero.addEventListener('dragleave', e => {
+    if (!tablero.contains(e.relatedTarget)) tablero.querySelectorAll('.columna').forEach(c => c.classList.remove('sobre'));
+  });
+  tablero.addEventListener('drop', e => {
+    const col = e.target.closest('.columna');
+    tablero.querySelectorAll('.columna').forEach(c => c.classList.remove('sobre'));
+    if (!col) return;
+    e.preventDefault();
+    moverLead(Number(e.dataTransfer.getData('text/plain')), col.dataset.etapa);
+  });
+
+  // detalle
+  tablero.addEventListener('click', e => {
+    const card = e.target.closest('.lead');
+    if (card) abrirDetalle(Number(card.dataset.id));
+  });
+
+  function abrirDetalle(id) {
+    const l = leads.find(x => x.id === id);
+    const v = VENDEDORES[l.vendedor];
+    const el = document.getElementById('detalle');
+    el.innerHTML = `
+      <h3>${Demo.esc(l.nombre)}</h3>
+      <div class="detalle-meta">
+        <div><small>Empresa</small>${Demo.esc(l.empresa)}</div>
+        <div><small>Valor</small><strong>${Demo.pesos(l.valor)}</strong></div>
+        <div><small>Vendedor</small>${v.nombre}</div>
+        <div><small>Etapa</small>${ETAPAS.find(e => e.id === l.etapa).nombre}</div>
+      </div>
+      <div class="campo"><label>Mover a</label></div>
+      <div class="mover">
+        ${ETAPAS.filter(e => e.id !== l.etapa).map(e => `<button class="btn sec mini" data-mover="${e.id}">${e.nombre}</button>`).join('')}
+      </div>
+      <form id="form-nota">
+        <div class="campo"><label>Agregar nota</label><textarea class="input" name="nota" rows="2" required placeholder="Ej: Llamar el jueves"></textarea></div>
+        <div class="modal-acciones" style="justify-content:space-between">
+          <button type="button" class="btn sec" data-cerrar="modal-detalle">Cerrar</button>
+          <button class="btn">Guardar nota</button>
+        </div>
+      </form>
+      <ul class="detalle-notas">
+        ${l.notas.length ? l.notas.map(n => `<li>${Demo.esc(n.texto)}<small>${n.fecha}</small></li>`).join('') : '<li><small>Sin notas todavía.</small></li>'}
+      </ul>`;
+    el.querySelectorAll('[data-mover]').forEach(b => b.addEventListener('click', () => {
+      moverLead(id, b.dataset.mover);
+      abrirDetalle(id);
+    }));
+    el.querySelector('#form-nota').addEventListener('submit', ev => {
+      ev.preventDefault();
+      const texto = ev.target.nota.value.trim();
+      if (!texto) return;
+      l.notas.unshift({ texto, fecha: 'Recién' });
+      guardar();
+      abrirDetalle(id);
+    });
+    Demo.abrirModal('modal-detalle');
+  }
+
+  // nueva oportunidad
+  const formNuevo = document.getElementById('form-nuevo');
+  formNuevo.vendedor.innerHTML = Object.entries(VENDEDORES).map(([k, v]) => `<option value="${k}">${v.nombre}</option>`).join('');
+  document.getElementById('nuevo').addEventListener('click', () => {
+    formNuevo.reset();
+    Demo.abrirModal('modal-nuevo');
+    formNuevo.nombre.focus();
+  });
+  formNuevo.addEventListener('submit', e => {
+    e.preventDefault();
+    const f = formNuevo;
+    leads.push({
+      id: Date.now(),
+      nombre: f.nombre.value.trim(),
+      empresa: f.empresa.value.trim(),
+      valor: Number(f.valor.value),
+      etapa: 'nuevo',
+      vendedor: f.vendedor.value,
+      notas: [{ texto: 'Oportunidad creada.', fecha: 'Recién' }],
+    });
+    guardar();
+    render();
+    Demo.cerrarModal('modal-nuevo');
+    Demo.toast('Oportunidad creada y asignada a ' + VENDEDORES[f.vendedor.value].nombre);
+  });
+
+  document.getElementById('buscar').addEventListener('input', e => { filtro = e.target.value; renderTablero(); });
+
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Agenda de turnos — Boldmente</title>
+<meta name="description" content="Demo interactiva de una agenda de turnos con recordatorios automáticos hecha por Boldmente. Datos ficticios.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;600;700&family=Syne:wght@800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../demo.css">
+<style>
+  :root { --acento: #0F766E; }
+  .marca-icono { background: #0F766E; }
+
+  .dias { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dias button {
+    background: var(--panel); border: 1px solid var(--linea); border-radius: 10px;
+    padding: 6px 12px; cursor: pointer; text-align: center; min-width: 54px;
+  }
+  .dias button small { display: block; color: var(--suave); font-size: 11px; }
+  .dias button strong { font-size: 16px; }
+  .dias button.activo { background: #0F766E; border-color: #0F766E; color: #fff; }
+  .dias button.activo small { color: rgba(255,255,255,0.75); }
+
+  .layout { display: grid; grid-template-columns: 1fr 320px; gap: 12px; align-items: start; }
+  @media (max-width: 1000px) { .layout { grid-template-columns: 1fr; } }
+
+  .agenda { display: grid; grid-template-columns: 56px 1fr 1fr; gap: 6px; }
+  .agenda .cab { font-weight: 600; font-size: 13px; padding: 4px 6px 8px; display: flex; align-items: center; gap: 8px; }
+  .agenda .hora { font-size: 12px; color: var(--suave); padding-top: 10px; }
+  .slot {
+    border: 1px dashed var(--linea); border-radius: 8px; min-height: 48px;
+    padding: 8px 10px; cursor: pointer; font-size: 12px; color: var(--suave);
+    background: none; text-align: left; transition: background 0.15s, border-color 0.15s;
+  }
+  .slot:hover { background: #F0FDFA; border-color: #0F766E; color: #0F766E; }
+  .slot.ocupado { border-style: solid; background: #F0FDFA; border-color: #99F6E4; color: var(--texto); }
+  .slot.ocupado.asistio { background: #F3F4F6; border-color: var(--linea); }
+  .slot.ocupado.ausente { background: #FEF2F2; border-color: #FECACA; }
+  .slot strong { display: block; font-size: 13px; }
+  .punto { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  .log { list-style: none; display: flex; flex-direction: column; gap: 10px; max-height: 520px; overflow-y: auto; }
+  .log li { display: grid; grid-template-columns: 28px 1fr; gap: 8px; font-size: 13px; }
+  .log .ico { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--bg); font-size: 14px; }
+  .log small { color: var(--suave); display: block; font-size: 11px; }
+  .auto-reglas { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .regla { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; }
+  .switch { position: relative; width: 34px; height: 20px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch span { position: absolute; inset: 0; background: #D1D5DB; border-radius: 999px; cursor: pointer; transition: background 0.2s; }
+  .switch span::after { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+  .switch input:checked + span { background: #0F766E; }
+  .switch input:checked + span::after { transform: translateX(14px); }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <div class="info">
+    <a href="/" class="logo">Bold<span>mente</span></a>
+    <span class="pill">Demo</span>
+    <span>Agenda de turnos con recordatorios automáticos · datos ficticios</span>
+  </div>
+  <div class="acciones">
+    <button id="demo-reset">Reiniciar demo</button>
+    <a class="cta" href="/#contacto">Quiero uno así →</a>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="marca"><div class="marca-icono">✦</div>Estudio Lumière</div>
+    <ul class="menu">
+      <li class="activo">Agenda</li>
+      <li>Clientes</li>
+      <li>Servicios</li>
+      <li>Automatizaciones</li>
+      <li>Caja</li>
+      <li>Configuración</li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="encabezado">
+      <div>
+        <h1>Agenda</h1>
+        <p>Tocá un horario libre para dar un turno, o uno ocupado para gestionarlo.</p>
+      </div>
+      <div class="dias" id="dias"></div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="layout">
+      <div class="card">
+        <div class="agenda" id="agenda"></div>
+      </div>
+      <div class="card">
+        <h2>Automatizaciones</h2>
+        <div class="auto-reglas" id="reglas"></div>
+        <h2>Actividad</h2>
+        <ul class="log" id="log"></ul>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- nuevo turno -->
+<div class="modal-fondo" id="modal-turno">
+  <form class="modal" id="form-turno">
+    <h3 id="turno-titulo">Nuevo turno</h3>
+    <div class="campo"><label>Cliente</label><input class="input" name="cliente" required placeholder="Ej: Valentina Ruiz"></div>
+    <div class="campo"><label>WhatsApp</label><input class="input" name="tel" required placeholder="11 5555-1234"></div>
+    <div class="campo"><label>Servicio</label><select class="input" name="servicio"></select></div>
+    <div class="modal-acciones">
+      <button type="button" class="btn sec" data-cerrar="modal-turno">Cancelar</button>
+      <button class="btn">Confirmar turno</button>
+    </div>
+  </form>
+</div>
+
+<!-- gestionar turno -->
+<div class="modal-fondo" id="modal-gestion">
+  <div class="modal" id="gestion"></div>
+</div>
+
+<script src="../demo.js"></script>
+<script>
+  const CLAVE = 'boldmente-demo-turnos';
+
+  const PROFESIONALES = [
+    { id: 'caro', nombre: 'Carolina', color: '#0F766E' },
+    { id: 'mica', nombre: 'Micaela', color: '#7C3AED' },
+  ];
+  const SERVICIOS = ['Limpieza facial', 'Manicura semipermanente', 'Lifting de pestañas', 'Depilación láser', 'Masaje descontracturante'];
+  const HORAS = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+  const DIAS = [
+    { id: 'lun', corto: 'Lun', num: 5 },
+    { id: 'mar', corto: 'Mar', num: 6 },
+    { id: 'mie', corto: 'Mié', num: 7 },
+    { id: 'jue', corto: 'Jue', num: 8 },
+    { id: 'vie', corto: 'Vie', num: 9 },
+    { id: 'sab', corto: 'Sáb', num: 10 },
+  ];
+
+  const nombres = ['Valentina Ruiz', 'Sofía Álvarez', 'Camila Pérez', 'Julieta Romero', 'Agustina Castro', 'Florencia Sosa', 'Lucía Molina', 'Paula Herrera', 'Brenda Ortiz', 'Daniela Vega', 'Rocío Navarro', 'Belén Acosta'];
+
+  function generarInicial() {
+    const turnos = {};
+    let n = 0;
+    DIAS.forEach((d, di) => HORAS.forEach((h, hi) => PROFESIONALES.forEach((p, pi) => {
+      if ((di * 7 + hi * 3 + pi * 5) % 5 < 3) {
+        turnos[`${d.id}|${h}|${p.id}`] = {
+          cliente: nombres[n % nombres.length],
+          tel: '11 5' + String(100 + n * 37).slice(-3) + '-' + String(2000 + n * 91).slice(-4),
+          servicio: SERVICIOS[(n * 3) % SERVICIOS.length],
+          estado: 'confirmado',
+        };
+        n++;
+      }
+    })));
+    return {
+      turnos,
+      reglas: { confirmacion: true, recordatorio: true, resena: false },
+      log: [
+        { ico: '💬', txt: 'Recordatorio enviado a Sofía Álvarez para mañana 10:00.', t: 'Hace 12 min' },
+        { ico: '✅', txt: 'Camila Pérez confirmó su turno respondiendo "SI".', t: 'Hace 40 min' },
+        { ico: '📅', txt: 'Turno reservado online por Julieta Romero.', t: 'Hace 1 h' },
+      ],
+    };
+  }
+
+  let datos = Demo.cargar(CLAVE, generarInicial());
+  let dia = 'lun';
+  let slotActual = null;
+  Demo.reinicio(CLAVE);
+
+  const guardar = () => Demo.guardar(CLAVE, datos);
+  const registrar = (ico, txt) => { datos.log.unshift({ ico, txt, t: 'Recién' }); datos.log = datos.log.slice(0, 30); };
+
+  function renderDias() {
+    document.getElementById('dias').innerHTML = DIAS.map(d =>
+      `<button class="${d.id === dia ? 'activo' : ''}" data-dia="${d.id}"><small>${d.corto}</small><strong>${d.num}</strong></button>`).join('');
+  }
+
+  function renderKpis() {
+    const delDia = Object.entries(datos.turnos).filter(([k]) => k.startsWith(dia + '|'));
+    const total = HORAS.length * PROFESIONALES.length;
+    const ausentes = delDia.filter(([, t]) => t.estado === 'ausente').length;
+    const kpis = [
+      { label: 'Turnos del día', valor: delDia.length },
+      { label: 'Ocupación', valor: Math.round(delDia.length / total * 100) + '%' },
+      { label: 'Ausencias', valor: ausentes, delta: '−62% desde que hay recordatorios', cls: 'up' },
+      { label: 'Mensajes automáticos (semana)', valor: 48 + datos.log.filter(l => l.t === 'Recién' && l.ico === '💬').length },
+    ];
+    document.getElementById('kpis').innerHTML = kpis.map(k =>
+      `<div class="kpi"><div class="label">${k.label}</div><div class="valor">${k.valor}</div>${k.delta ? `<div class="delta ${k.cls}">${k.delta}</div>` : ''}</div>`).join('');
+  }
+
+  function renderAgenda() {
+    let html = '<div></div>' + PROFESIONALES.map(p => `<div class="cab"><span class="punto" style="background:${p.color}"></span>${p.nombre}</div>`).join('');
+    HORAS.forEach(h => {
+      html += `<div class="hora">${h}</div>`;
+      PROFESIONALES.forEach(p => {
+        const clave = `${dia}|${h}|${p.id}`;
+        const t = datos.turnos[clave];
+        if (t) {
+          const extra = t.estado === 'asistio' ? ' asistio' : t.estado === 'ausente' ? ' ausente' : '';
+          const badge = t.estado === 'asistio' ? '<span class="badge">Asistió</span>' : t.estado === 'ausente' ? '<span class="badge mal">Ausente</span>' : '';
+          html += `<button class="slot ocupado${extra}" data-slot="${clave}"><strong>${Demo.esc(t.cliente)}</strong>${Demo.esc(t.servicio)} ${badge}</button>`;
+        } else {
+          html += `<button class="slot" data-slot="${clave}">+ Libre</button>`;
+        }
+      });
+    });
+    document.getElementById('agenda').innerHTML = html;
+  }
+
+  function renderReglas() {
+    const reglas = [
+      { id: 'confirmacion', txt: 'WhatsApp de confirmación al reservar' },
+      { id: 'recordatorio', txt: 'Recordatorio 24 h antes' },
+      { id: 'resena', txt: 'Pedir reseña en Google después del turno' },
+    ];
+    document.getElementById('reglas').innerHTML = reglas.map(r =>
+      `<label class="regla">${r.txt}<span class="switch"><input type="checkbox" data-regla="${r.id}" ${datos.reglas[r.id] ? 'checked' : ''}><span></span></span></label>`).join('');
+  }
+
+  function renderLog() {
+    document.getElementById('log').innerHTML = datos.log.map(l =>
+      `<li><span class="ico">${l.ico}</span><div>${Demo.esc(l.txt)}<small>${l.t}</small></div></li>`).join('');
+  }
+
+  function render() { renderDias(); renderKpis(); renderAgenda(); renderReglas(); renderLog(); }
+
+  const descripcion = clave => {
+    const [d, h, p] = clave.split('|');
+    return `${DIAS.find(x => x.id === d).corto} ${DIAS.find(x => x.id === d).num} · ${h} con ${PROFESIONALES.find(x => x.id === p).nombre}`;
+  };
+
+  document.getElementById('dias').addEventListener('click', e => {
+    const b = e.target.closest('[data-dia]');
+    if (!b) return;
+    dia = b.dataset.dia;
+    render();
+  });
+
+  const formTurno = document.getElementById('form-turno');
+  formTurno.servicio.innerHTML = SERVICIOS.map(s => `<option>${s}</option>`).join('');
+
+  document.getElementById('agenda').addEventListener('click', e => {
+    const b = e.target.closest('[data-slot]');
+    if (!b) return;
+    slotActual = b.dataset.slot;
+    const t = datos.turnos[slotActual];
+    if (!t) {
+      formTurno.reset();
+      document.getElementById('turno-titulo').textContent = 'Nuevo turno · ' + descripcion(slotActual);
+      Demo.abrirModal('modal-turno');
+      formTurno.cliente.focus();
+      return;
+    }
+    const g = document.getElementById('gestion');
+    g.innerHTML = `
+      <h3>${Demo.esc(t.cliente)}</h3>
+      <p style="color:var(--suave);margin-bottom:6px">${descripcion(slotActual)}</p>
+      <p style="margin-bottom:16px">${Demo.esc(t.servicio)} · WhatsApp ${Demo.esc(t.tel)}</p>
+      <div class="modal-acciones" style="justify-content:flex-start;flex-wrap:wrap">
+        <button class="btn" data-accion="asistio">Marcar asistió</button>
+        <button class="btn sec" data-accion="ausente">Marcar ausente</button>
+        <button class="btn sec" data-accion="cancelar" style="color:var(--mal)">Cancelar turno</button>
+      </div>`;
+    Demo.abrirModal('modal-gestion');
+  });
+
+  document.getElementById('gestion').addEventListener('click', e => {
+    const accion = e.target.dataset.accion;
+    if (!accion) return;
+    const t = datos.turnos[slotActual];
+    if (accion === 'cancelar') {
+      delete datos.turnos[slotActual];
+      registrar('🗓️', `Turno de ${t.cliente} cancelado. El horario quedó libre para reservas online.`);
+      Demo.toast('Turno cancelado. Se avisó a la lista de espera.');
+    } else if (accion === 'asistio') {
+      t.estado = 'asistio';
+      if (datos.reglas.resena) {
+        registrar('⭐', `Pedido de reseña enviado a ${t.cliente}.`);
+        Demo.toast('Listo. Se le pidió una reseña por WhatsApp.');
+      }
+    } else {
+      t.estado = 'ausente';
+      registrar('💬', `Mensaje a ${t.cliente} para reprogramar el turno.`);
+      Demo.toast('Marcado como ausente. Se le ofreció reprogramar.');
+    }
+    guardar();
+    Demo.cerrarModal('modal-gestion');
+    render();
+  });
+
+  formTurno.addEventListener('submit', e => {
+    e.preventDefault();
+    const t = {
+      cliente: formTurno.cliente.value.trim(),
+      tel: formTurno.tel.value.trim(),
+      servicio: formTurno.servicio.value,
+      estado: 'confirmado',
+    };
+    datos.turnos[slotActual] = t;
+    registrar('📅', `Turno dado a ${t.cliente}: ${descripcion(slotActual)}.`);
+    if (datos.reglas.confirmacion) registrar('💬', `WhatsApp de confirmación enviado a ${t.cliente} (${t.tel}).`);
+    if (datos.reglas.recordatorio) registrar('⏰', `Recordatorio programado para 24 h antes.`);
+    guardar();
+    Demo.cerrarModal('modal-turno');
+    render();
+    Demo.toast(datos.reglas.confirmacion ? `✅ Turno confirmado. ${t.cliente} ya recibió el WhatsApp.` : '✅ Turno confirmado.');
+  });
+
+  document.getElementById('reglas').addEventListener('change', e => {
+    const id = e.target.dataset.regla;
+    if (!id) return;
+    datos.reglas[id] = e.target.checked;
+    registrar('⚙️', `Automatización ${e.target.checked ? 'activada' : 'pausada'}: ${e.target.closest('.regla').textContent.trim()}.`);
+    guardar();
+    renderLog();
+  });
+
+  render();
+</script>
+</body>
+</html>
