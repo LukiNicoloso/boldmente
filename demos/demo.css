@@ -42,14 +42,19 @@ button, input, select, textarea { font: inherit; color: inherit; }
   flex-wrap: wrap;
 }
 .demo-banner .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: 'Syne', sans-serif;
   font-weight: 800;
   font-size: 15px;
-  color: #fff;
+  color: #F5F5F0;
   text-decoration: none;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
-.demo-banner .logo span { color: var(--lima); }
+.demo-banner .logo svg { width: 28px; height: 26px; overflow: visible; }
+.demo-banner .logo .wm-mente { color: var(--lima); }
 .demo-banner .info { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .demo-banner .pill {
   background: rgba(232,255,71,0.12);
