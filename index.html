@@ -475,17 +475,22 @@
     font-size: 15px;
     color: rgba(255,255,255,0.4);
     text-align: center;
+    text-decoration: none;
+    flex-direction: column;
+    gap: 0.75rem;
     transition: color 0.2s, background 0.2s;
   }
   .cliente-logo:hover { color: #fff; background: #111; }
   .cliente-logo img {
+    width: auto;
+    height: auto;
     max-width: 120px;
-    max-height: 44px;
-    filter: grayscale(1) brightness(1.6);
-    opacity: 0.6;
-    transition: opacity 0.2s, filter 0.2s;
+    max-height: 96px;
+    opacity: 0.8;
+    transition: opacity 0.2s, transform 0.2s;
   }
-  .cliente-logo:hover img { opacity: 1; filter: none; }
+  .cliente-logo:hover img { opacity: 1; transform: scale(1.04); }
+  .cliente-logo span { font-size: 13px; }
 
   .testimonios {
     display: grid;
@@ -1054,14 +1059,16 @@
   <p class="section-tag">Clientes</p>
   <h2 class="section-title">Negocios que ya confían en nosotros.</h2>
 
-  <!-- TODO: reemplazar por los clientes reales. Con logo: <div class="cliente-logo"><img src="/clientes/archivo.png" alt="Nombre"></div> -->
+  <!-- Para sumar un cliente: <a class="cliente-logo" href="https://..." target="_blank" rel="noopener"><img src="/clientes/archivo.png" alt="Nombre"><span>Nombre</span></a> -->
   <div class="clientes-logos">
-    <div class="cliente-logo">Cliente 1</div>
+    <a class="cliente-logo" href="https://www.fuskas.com.ar/" target="_blank" rel="noopener">
+      <img src="/clientes/fuskas-motion.png" alt="Fuskás Motion — Estudios biomecánicos de la marcha" width="120" height="123" loading="lazy">
+      <span>Fuskás Motion</span>
+    </a>
     <div class="cliente-logo">Cliente 2</div>
     <div class="cliente-logo">Cliente 3</div>
     <div class="cliente-logo">Cliente 4</div>
     <div class="cliente-logo">Cliente 5</div>
-    <div class="cliente-logo">Cliente 6</div>
   </div>
 
   <!-- TODO: reemplazar por testimonios reales (o borrar este bloque si todavía no hay) -->
