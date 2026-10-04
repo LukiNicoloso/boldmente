@@ -580,7 +580,8 @@
   }
 
   @media (max-width: 700px) {
-    .nosotros-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .nosotros-inner { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+    .nosotros-stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   }
 
   .nosotros-tagline {
@@ -857,12 +858,61 @@
   }
 
   /* mobile */
+  @media (max-width: 700px) {
+    .servicios-header { display: block; margin-bottom: 2rem; }
+    .servicios-aside { display: none; }
+  }
+
   @media (max-width: 600px) {
     nav { padding: 1rem 1.25rem; }
     .nav-links { display: none; }
-    .hero { padding: 7rem 1.25rem 4rem; }
-    .section { padding: 4rem 1.25rem; }
-    .cta-section { padding: 4rem 1.25rem; }
+
+    .hero { min-height: auto; padding: 6.5rem 1.25rem 3.5rem; }
+    .hero-badge { margin-bottom: 1.25rem; }
+    .hero-title { font-size: clamp(1.5rem, 8.4vw, 3.5rem); margin-bottom: 1.25rem; }
+    .hero-sub { font-size: 14px; margin-bottom: 2rem; }
+
+    .section { padding: 3rem 1.25rem; }
+    .section-title { font-size: clamp(1.6rem, 7.5vw, 2rem); }
+
+    .servicio-card { padding: 1.5rem 1.25rem; }
+    .servicio-num { margin-bottom: 0.75rem; }
+    .servicio-icon { margin-bottom: 0.75rem; }
+    .servicio-nombre { font-size: 18px; margin-bottom: 0.5rem; }
+    .servicio-tag { margin-top: 0.85rem; }
+
+    .trabajos-intro { font-size: 13px; margin-top: 1rem; }
+    .trabajos-grid { margin-top: 1.75rem; gap: 12px; }
+    .trabajo-preview { height: 120px; padding: 14px; }
+    .trabajo-body { padding: 1.25rem; }
+    .trabajo-desc { margin-bottom: 1rem; }
+    .trabajo-tags { margin-bottom: 1rem; }
+
+    .clientes-logos { margin-top: 1.75rem; max-width: none; }
+    .cliente-logo { min-height: 0; padding: 1.25rem 0.75rem; }
+
+    .para-quien-grid { margin-top: 1.75rem; gap: 8px; }
+    .cliente-card {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      column-gap: 0.85rem;
+      padding: 1rem 1.25rem;
+    }
+    .cliente-icon { grid-row: span 2; font-size: 22px; margin-bottom: 0; }
+
+    .proceso-list { margin-top: 1.25rem; }
+    .proceso-step { grid-template-columns: 32px 1fr; gap: 0.75rem; padding: 1.1rem 0; }
+
+    .nosotros-tagline { font-size: clamp(1.25rem, 6.4vw, 2rem); margin-bottom: 1rem; }
+    .nosotros-texto { font-size: 13px; line-height: 1.7; margin-bottom: 1rem; }
+    .stat-box { padding: 1rem; }
+    .stat-num { font-size: clamp(1.5rem, 8vw, 2rem); }
+
+    .cta-section { padding: 3rem 1.25rem; }
+    .cta-title { font-size: clamp(1.6rem, 9vw, 5rem); margin-bottom: 1rem; }
+    .cta-sub { margin-bottom: 0; }
+    .contacto-form { margin-top: 1.75rem; gap: 0.75rem; }
+
     footer { padding: 1.5rem 1.25rem; }
   }
 </style>
