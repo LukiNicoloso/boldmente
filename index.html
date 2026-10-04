@@ -521,7 +521,7 @@
   /* quienes somos */
   .nosotros-inner {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 4rem;
     align-items: center;
   }
@@ -581,7 +581,7 @@
 
   .nosotros-stats {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 12px;
   }
 
@@ -600,7 +600,7 @@
   .stat-num {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
-    font-size: 2.5rem;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
     letter-spacing: -0.03em;
     color: var(--lima);
     line-height: 1;
@@ -612,6 +612,44 @@
     color: rgba(255,255,255,0.4);
     line-height: 1.4;
   }
+
+  /* fundador */
+  .fundador {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 0.5px solid rgba(232,255,71,0.2);
+    background: rgba(232,255,71,0.04);
+    border-radius: 10px;
+  }
+  .fundador img {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--lima);
+  }
+  .fundador-info { min-width: 0; }
+  .fundador-nombre { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.02em; line-height: 1.1; }
+  .fundador-rol { font-size: 12px; color: var(--lima); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+  .fundador-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0.6rem 0 0.7rem; }
+  .fundador-chips li { font-size: 11px; color: rgba(255,255,255,0.7); border: 0.5px solid rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 3px; }
+  .fundador-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+  .fundador-link:hover { color: var(--lima); }
+
+  .cta-persona {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    text-align: left;
+  }
+  .cta-persona img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--lima); flex-shrink: 0; }
+  .cta-persona strong { color: #fff; font-weight: 500; }
 
   /* cta final */
   .cta-section {
@@ -995,6 +1033,9 @@
     #contacto .cta-title { padding-inline: 0; font-size: clamp(1.6rem, 9vw, 5rem); }
     #nosotros .nosotros-inner { display: block; }
     #nosotros .nosotros-tagline { padding-right: 0; }
+    .fundador { gap: 0.9rem; padding: 1rem; }
+    .fundador img { width: 64px; height: 64px; }
+    .fundador-nombre { font-size: 18px; }
     #nosotros .nosotros-stats { margin-top: 2rem; }
     .logo { font-size: clamp(14px, 4.4vw, 18px); gap: 0.35rem; }
     .logo .bm { width: 30px; height: 28px; }
@@ -1406,8 +1447,21 @@
   <div class="nosotros-inner">
     <div>
       <h2 class="nosotros-tagline">Experiencia de empresa grande.<br><span class="lima">Velocidad de startup.</span></h2>
+      <div class="fundador">
+        <img src="/lucas-nicoloso.jpg" alt="Lucas Nicoloso, fundador de Boldmente" width="88" height="88" loading="lazy">
+        <div class="fundador-info">
+          <div class="fundador-nombre">Lucas Nicoloso</div>
+          <div class="fundador-rol">Fundador de Boldmente</div>
+          <ul class="fundador-chips">
+            <li>Ing. en Informática</li>
+            <li>MBA</li>
+            <li>Gerente de Producto en Mercado Libre</li>
+          </ul>
+          <a class="fundador-link" href="https://www.linkedin.com/in/lnicoloso" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3v-11zm6.5 0h3.8v1.5h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1v5.46h-4v-4.84c0-1.15-.02-2.64-1.61-2.64-1.61 0-1.86 1.26-1.86 2.56v4.92h-4v-11z"/></svg>Ver perfil en LinkedIn</a>
+        </div>
+      </div>
       <p class="nosotros-texto">
-        Somos el equipo detrás de Boldmente. Venimos de Ualá, Mercado Libre y Telecom Argentina — sabemos cómo se mueven los negocios reales, qué falla, y qué hay que resolver rápido.
+        Detrás de Boldmente estoy yo, Lucas. Soy ingeniero en informática y MBA, y hoy trabajo como Gerente de Producto en Mercado Libre. Antes pasé por Ualá y Telecom Argentina: sé cómo se mueven los negocios reales, qué falla y qué hay que resolver rápido.
       </p>
       <p class="nosotros-texto">
         Desarrollamos con un proceso y herramientas modernas que comprimen meses de trabajo en días. No porque cortemos esquinas, sino porque encontramos una forma de trabajar que es más rápida y más precisa al mismo tiempo. El resultado es software hecho a medida, con iteraciones cortas, que queda funcionando de verdad.
@@ -1449,7 +1503,11 @@
     </svg>
   </div>
   <h2 class="cta-title">¿Listo para<br><span class="lima">boldmente?</span></h2>
-  <p class="cta-sub">Contanos qué necesitás. Te respondemos en menos de 24 horas.</p>
+  <p class="cta-sub">Contanos qué necesitás.</p>
+  <div class="cta-persona">
+    <img src="/lucas-nicoloso.jpg" alt="" width="44" height="44" loading="lazy">
+    <span>Te respondo yo, <strong>Lucas</strong>, en menos de 24 horas.</span>
+  </div>
 
   <form class="contacto-form" id="contacto-form">
     <input type="text" name="nombre" placeholder="Tu nombre" required>
