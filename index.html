@@ -342,6 +342,157 @@
     border-radius: 3px;
   }
 
+  /* trabajos / demos */
+  .trabajos-intro {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-top: 1.25rem;
+  }
+
+  .trabajos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 3rem;
+  }
+
+  .trabajo-card {
+    border: 0.5px solid var(--borde);
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .trabajo-card:hover {
+    border-color: rgba(232,255,71,0.35);
+    transform: translateY(-3px);
+  }
+
+  .trabajo-preview {
+    height: 170px;
+    background: #121212;
+    border-bottom: 0.5px solid var(--borde);
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .trabajo-preview::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 10px;
+    width: 30px; height: 6px;
+    background:
+      radial-gradient(circle, rgba(255,255,255,0.18) 2.5px, transparent 3px) 0 0 / 10px 6px repeat-x;
+  }
+
+  .mock-kanban { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: 100%; padding-top: 6px; }
+  .mock-kanban div { background: rgba(255,255,255,0.03); border-radius: 4px; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
+  .mock-kanban span { display: block; height: 18px; border-radius: 3px; background: rgba(255,255,255,0.08); }
+  .mock-kanban span.on { background: rgba(232,255,71,0.55); }
+
+  .mock-barras { display: flex; align-items: flex-end; gap: 8px; height: 100%; padding-top: 14px; }
+  .mock-barras span { flex: 1; border-radius: 3px 3px 0 0; background: rgba(255,255,255,0.1); }
+  .mock-barras span.on { background: var(--lima); }
+
+  .mock-agenda { display: grid; grid-template-columns: 22px 1fr 1fr; gap: 5px; padding-top: 6px; }
+  .mock-agenda i { height: 18px; border-radius: 3px; background: rgba(255,255,255,0.04); border: 0.5px dashed rgba(255,255,255,0.1); }
+  .mock-agenda i.h { background: none; border: none; border-top: 0.5px solid rgba(255,255,255,0.12); margin-top: 8px; height: 0; }
+  .mock-agenda i.on { background: rgba(232,255,71,0.18); border: 0.5px solid rgba(232,255,71,0.45); }
+
+  .trabajo-body { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
+
+  .trabajo-rubro {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 0.5rem;
+  }
+
+  .trabajo-nombre {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.6rem;
+  }
+
+  .trabajo-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .trabajo-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+  .trabajo-tags span {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    border: 0.5px solid rgba(255,255,255,0.12);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .trabajo-link {
+    margin-top: auto;
+    font-size: 13px;
+    color: var(--lima);
+    font-weight: 500;
+  }
+
+  .trabajos-nota {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 1.25rem;
+  }
+
+  /* clientes */
+  .clientes-logos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--borde);
+    border: 0.5px solid var(--borde);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 3rem;
+    max-width: 560px;
+  }
+
+  .cliente-logo {
+    background: var(--negro);
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    text-decoration: none;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: color 0.2s, background 0.2s;
+  }
+  .cliente-logo:hover { color: #fff; background: #111; }
+  .cliente-logo img {
+    width: auto;
+    height: auto;
+    max-width: 120px;
+    max-height: 96px;
+    opacity: 0.8;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .cliente-logo:hover img { opacity: 1; transform: scale(1.04); }
+  .cliente-logo span { font-size: 13px; }
+
   /* para quién */
   .para-quien-grid {
     display: grid;
@@ -722,6 +873,8 @@
   <a href="#" class="logo">Bold<span>mente</span></a>
   <ul class="nav-links">
     <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#trabajos">Trabajos</a></li>
+    <li><a href="#clientes">Clientes</a></li>
     <li><a href="#para-quien">Para quién</a></li>
     <li><a href="#como-funciona">Cómo funciona</a></li>
     <li><a href="#nosotros">Quiénes somos</a></li>
@@ -748,7 +901,7 @@
 
   <div class="hero-actions">
     <a href="#contacto" class="btn-primary">Quiero saber más →</a>
-    <a href="#servicios" class="btn-ghost">Ver servicios ↓</a>
+    <a href="#trabajos" class="btn-ghost">Probar una demo ↓</a>
   </div>
 
 
@@ -812,6 +965,90 @@
       <div class="servicio-tag">Desde 1 semana</div>
     </div>
 
+  </div>
+</section>
+
+<!-- TRABAJOS -->
+<section class="section" id="trabajos">
+  <p class="section-tag">Trabajos</p>
+  <h2 class="section-title">No te lo contamos. Probalo.</h2>
+  <p class="trabajos-intro">
+    Estas son versiones demo de sistemas que armamos para clientes reales. Entrá, tocá, mové cosas: funcionan de verdad, solo que con datos inventados.
+  </p>
+
+  <div class="trabajos-grid">
+
+    <a class="trabajo-card fade-in" href="/demos/crm/" target="_blank" rel="noopener">
+      <div class="trabajo-preview" aria-hidden="true">
+        <div class="mock-kanban">
+          <div><span></span><span></span><span class="on"></span></div>
+          <div><span></span><span class="on"></span></div>
+          <div><span></span><span></span><span></span></div>
+          <div><span class="on"></span></div>
+        </div>
+      </div>
+      <div class="trabajo-body">
+        <div class="trabajo-rubro">Distribuidora mayorista</div>
+        <div class="trabajo-nombre">CRM de ventas</div>
+        <div class="trabajo-desc">Pipeline de oportunidades por vendedor, seguimiento de cada cliente y métricas de cierre en tiempo real. Adiós al Excel compartido.</div>
+        <div class="trabajo-tags"><span>CRM</span><span>Pipeline</span><span>Reportes</span></div>
+        <div class="trabajo-link">Abrir demo →</div>
+      </div>
+    </a>
+
+    <a class="trabajo-card fade-in" href="/demos/stock/" target="_blank" rel="noopener">
+      <div class="trabajo-preview" aria-hidden="true">
+        <div class="mock-barras">
+          <span style="height:45%"></span><span style="height:58%"></span><span style="height:82%"></span><span style="height:76%"></span><span style="height:40%"></span><span style="height:47%"></span><span class="on" style="height:62%"></span>
+        </div>
+      </div>
+      <div class="trabajo-body">
+        <div class="trabajo-rubro">Cadena de cafeterías</div>
+        <div class="trabajo-nombre">Panel de sucursales</div>
+        <div class="trabajo-desc">Ventas y stock de todas las sucursales en una sola pantalla, con alertas de faltantes y pedidos a proveedores en un clic.</div>
+        <div class="trabajo-tags"><span>Panel de control</span><span>Stock</span><span>Multi-sucursal</span></div>
+        <div class="trabajo-link">Abrir demo →</div>
+      </div>
+    </a>
+
+    <a class="trabajo-card fade-in" href="/demos/turnos/" target="_blank" rel="noopener">
+      <div class="trabajo-preview" aria-hidden="true">
+        <div class="mock-agenda">
+          <i class="h"></i><i class="on"></i><i></i>
+          <i class="h"></i><i class="on"></i><i class="on"></i>
+          <i class="h"></i><i></i><i class="on"></i>
+          <i class="h"></i><i class="on"></i><i></i>
+          <i class="h"></i><i></i><i class="on"></i>
+        </div>
+      </div>
+      <div class="trabajo-body">
+        <div class="trabajo-rubro">Centro de estética</div>
+        <div class="trabajo-nombre">Agenda de turnos</div>
+        <div class="trabajo-desc">Turnos por profesional con confirmación y recordatorio automático por WhatsApp. Menos ausencias, cero llamados.</div>
+        <div class="trabajo-tags"><span>Turnos</span><span>Automatización</span><span>WhatsApp</span></div>
+        <div class="trabajo-link">Abrir demo →</div>
+      </div>
+    </a>
+
+  </div>
+  <p class="trabajos-nota">* Nombres y datos de las demos son ficticios para proteger la información de nuestros clientes.</p>
+</section>
+
+<!-- CLIENTES -->
+<section class="section" id="clientes">
+  <p class="section-tag">Clientes</p>
+  <h2 class="section-title">Negocios que ya confían en nosotros.</h2>
+
+  <!-- Para sumar un cliente: <a class="cliente-logo" href="https://..." target="_blank" rel="noopener"><img src="/clientes/archivo.png" alt="Nombre"><span>Nombre</span></a> -->
+  <div class="clientes-logos">
+    <a class="cliente-logo" href="https://www.fuskas.com.ar/" target="_blank" rel="noopener">
+      <img src="/clientes/fuskas-motion.png" alt="Fuskás Motion — Estudios biomecánicos de la marcha" width="120" height="123" loading="lazy">
+      <span>Fuskás Motion</span>
+    </a>
+    <a class="cliente-logo" href="https://www.sesio.com.ar/" target="_blank" rel="noopener">
+      <img src="/clientes/sesio.png" alt="Sesio — Sistema para psicólogos independientes" width="120" height="38" loading="lazy">
+      <span>Software para psicólogos</span>
+    </a>
   </div>
 </section>
 

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Panel de sucursales — Boldmente</title>
+<meta name="description" content="Demo interactiva de un panel de ventas y stock multi-sucursal hecho por Boldmente. Datos ficticios.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;600;700&family=Syne:wght@800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../demo.css">
+<style>
+  :root { --acento: #9A3412; }
+  .marca-icono { background: #9A3412; }
+
+  .tabs { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--linea); border-radius: 10px; padding: 4px; flex-wrap: wrap; }
+  .tabs button {
+    background: none; border: none; border-radius: 7px;
+    padding: 6px 12px; cursor: pointer; color: var(--suave); font-weight: 600; font-size: 13px;
+  }
+  .tabs button.activo { background: var(--texto); color: #fff; }
+
+  .grilla { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 900px) { .grilla { grid-template-columns: 1fr; } }
+
+  .grafico { display: flex; align-items: flex-end; gap: 10px; height: 200px; padding-top: 10px; }
+  .barra-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .barra-pila { width: 100%; max-width: 46px; display: flex; flex-direction: column-reverse; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .barra-pila div { width: 100%; transition: height 0.3s; }
+  .barra-col small { color: var(--suave); font-size: 11px; }
+  .barra-col .monto { font-size: 10px; color: var(--suave); }
+  .leyenda { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; color: var(--suave); }
+  .leyenda span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; background: var(--c); }
+
+  .top-lista { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .top-lista li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 13px; }
+  .top-barra { grid-column: span 2; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+  .top-barra div { height: 100%; background: #9A3412; border-radius: 3px; }
+
+  .stock-ctrl { display: inline-flex; align-items: center; gap: 6px; }
+  .stock-ctrl button {
+    width: 24px; height: 24px; border-radius: 6px;
+    border: 1px solid var(--linea); background: var(--panel); cursor: pointer; line-height: 1;
+  }
+  .stock-ctrl strong { min-width: 28px; text-align: center; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .card-head h2 { margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <div class="info">
+    <a href="/" class="logo">Bold<span>mente</span></a>
+    <span class="pill">Demo</span>
+    <span>Panel de ventas y stock multi-sucursal · datos ficticios</span>
+  </div>
+  <div class="acciones">
+    <button id="demo-reset">Reiniciar demo</button>
+    <a class="cta" href="/#contacto">Quiero uno así →</a>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="marca"><div class="marca-icono">☕</div>Café Martina</div>
+    <ul class="menu">
+      <li class="activo">Panel general</li>
+      <li>Ventas</li>
+      <li>Stock</li>
+      <li>Proveedores</li>
+      <li>Equipo</li>
+      <li>Configuración</li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="encabezado">
+      <div>
+        <h1>Panel general</h1>
+        <p>Ventas y stock de todas las sucursales en un solo lugar.</p>
+      </div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grilla">
+      <div class="card">
+        <h2>Ventas últimos 7 días</h2>
+        <div class="grafico" id="grafico"></div>
+        <div class="leyenda" id="leyenda"></div>
+      </div>
+      <div class="card">
+        <h2>Más vendidos de la semana</h2>
+        <ul class="top-lista" id="top"></ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Stock</h2>
+        <button class="btn" id="pedido">Generar pedido a proveedores</button>
+      </div>
+      <div class="tabla-wrap">
+        <table>
+          <thead><tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Mínimo</th><th>Estado</th></tr></thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../demo.js"></script>
+<script>
+  const CLAVE = 'boldmente-demo-stock';
+
+  const SUCURSALES = [
+    { id: 'palermo', nombre: 'Palermo', color: '#9A3412' },
+    { id: 'belgrano', nombre: 'Belgrano', color: '#EA8A4B' },
+    { id: 'caballito', nombre: 'Caballito', color: '#F4C9A4' },
+  ];
+
+  const DIAS = ['Jue', 'Vie', 'Sáb', 'Dom', 'Lun', 'Mar', 'Hoy'];
+  const VENTAS = {
+    palermo:   [612000, 748000, 935000, 880000, 540000, 575000, 498000],
+    belgrano:  [455000, 520000, 690000, 640000, 410000, 432000, 371000],
+    caballito: [318000, 362000, 470000, 455000, 290000, 301000, 262000],
+  };
+  const TICKETS_HOY = { palermo: 142, belgrano: 109, caballito: 83 };
+
+  const TOP = [
+    { nombre: 'Café con leche', u: 1240 },
+    { nombre: 'Medialunas', u: 1105 },
+    { nombre: 'Flat white', u: 690 },
+    { nombre: 'Tostado J&Q', u: 512 },
+    { nombre: 'Budín de limón', u: 308 },
+  ];
+
+  const INICIAL = [
+    { prod: 'Café en grano (kg)', cat: 'Insumos', min: 8, stock: { palermo: 14, belgrano: 6, caballito: 9 } },
+    { prod: 'Leche entera (L)', cat: 'Lácteos', min: 30, stock: { palermo: 42, belgrano: 35, caballito: 18 } },
+    { prod: 'Leche de almendras (L)', cat: 'Lácteos', min: 10, stock: { palermo: 12, belgrano: 4, caballito: 11 } },
+    { prod: 'Medialunas (docena)', cat: 'Panificados', min: 15, stock: { palermo: 22, belgrano: 19, caballito: 16 } },
+    { prod: 'Pan de molde', cat: 'Panificados', min: 6, stock: { palermo: 9, belgrano: 7, caballito: 3 } },
+    { prod: 'Vasos take away', cat: 'Descartables', min: 200, stock: { palermo: 480, belgrano: 150, caballito: 320 } },
+    { prod: 'Azúcar en sobres (caja)', cat: 'Insumos', min: 4, stock: { palermo: 7, belgrano: 5, caballito: 6 } },
+    { prod: 'Jamón cocido (kg)', cat: 'Fiambres', min: 3, stock: { palermo: 4, belgrano: 2, caballito: 5 } },
+  ];
+
+  let stock = Demo.cargar(CLAVE, INICIAL);
+  let sucursal = 'todas';
+  Demo.reinicio(CLAVE);
+
+  const activas = () => sucursal === 'todas' ? SUCURSALES : SUCURSALES.filter(s => s.id === sucursal);
+  const stockDe = item => activas().reduce((s, x) => s + item.stock[x.id], 0);
+  const minimoDe = item => item.min * activas().length;
+  const estado = item => {
+    const bajos = activas().filter(s => item.stock[s.id] < item.min);
+    if (bajos.some(s => item.stock[s.id] < item.min / 2)) return { cls: 'mal', txt: 'Crítico' + (sucursal === 'todas' ? ' · ' + bajos.map(s => s.nombre).join(', ') : '') };
+    if (bajos.length) return { cls: 'warn', txt: 'Bajo' + (sucursal === 'todas' ? ' · ' + bajos.map(s => s.nombre).join(', ') : '') };
+    return { cls: 'ok', txt: 'OK' };
+  };
+
+  function renderTabs() {
+    const opciones = [{ id: 'todas', nombre: 'Todas' }, ...SUCURSALES];
+    document.getElementById('tabs').innerHTML = opciones.map(o =>
+      `<button class="${o.id === sucursal ? 'activo' : ''}" data-suc="${o.id}">${o.nombre}</button>`).join('');
+  }
+
+  function renderKpis() {
+    const hoy = activas().reduce((s, x) => s + VENTAS[x.id][6], 0);
+    const ayer = activas().reduce((s, x) => s + VENTAS[x.id][5], 0);
+    const tickets = activas().reduce((s, x) => s + TICKETS_HOY[x.id], 0);
+    const semana = activas().reduce((s, x) => s + VENTAS[x.id].reduce((a, b) => a + b, 0), 0);
+    const alertas = stock.filter(i => estado(i).cls !== 'ok').length;
+    const delta = Math.round((hoy - ayer) / ayer * 100);
+    const kpis = [
+      { label: 'Ventas de hoy', valor: Demo.pesos(hoy), delta: `${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs. ayer`, cls: delta >= 0 ? 'up' : 'down' },
+      { label: 'Ticket promedio', valor: Demo.pesos(hoy / tickets), delta: `${tickets} tickets hoy`, cls: '' },
+      { label: 'Ventas de la semana', valor: Demo.pesos(semana), delta: '▲ 8% vs. semana anterior', cls: 'up' },
+      { label: 'Alertas de stock', valor: alertas, delta: alertas ? 'productos bajo el mínimo' : 'todo en orden', cls: alertas ? 'down' : 'up' },
+    ];
+    document.getElementById('kpis').innerHTML = kpis.map(k =>
+      `<div class="kpi"><div class="label">${k.label}</div><div class="valor">${k.valor}</div><div class="delta ${k.cls}">${k.delta}</div></div>`).join('');
+  }
+
+  function renderGrafico() {
+    const totales = DIAS.map((_, d) => activas().reduce((s, x) => s + VENTAS[x.id][d], 0));
+    const max = Math.max(...totales);
+    document.getElementById('grafico').innerHTML = DIAS.map((dia, d) => `
+      <div class="barra-col">
+        <span class="monto">${Math.round(totales[d] / 1000)}k</span>
+        <div class="barra-pila">
+          ${activas().map(s => `<div style="height:${VENTAS[s.id][d] / max * 160}px;background:${s.color}" title="${s.nombre}: ${Demo.pesos(VENTAS[s.id][d])}"></div>`).join('')}
+        </div>
+        <small>${dia}</small>
+      </div>`).join('');
+    document.getElementById('leyenda').innerHTML = activas().map(s => `<span style="--c:${s.color}">${s.nombre}</span>`).join('');
+  }
+
+  function renderTop() {
+    const factor = sucursal === 'todas' ? 1 : { palermo: 0.45, belgrano: 0.33, caballito: 0.22 }[sucursal];
+    const max = TOP[0].u * factor;
+    document.getElementById('top').innerHTML = TOP.map(t => {
+      const u = Math.round(t.u * factor);
+      return `<li><span>${t.nombre}</span><strong>${u} u.</strong><div class="top-barra"><div style="width:${u / max * 100}%"></div></div></li>`;
+    }).join('');
+  }
+
+  function renderTabla() {
+    const editable = sucursal !== 'todas';
+    document.getElementById('tabla').innerHTML = stock.map((item, i) => {
+      const e = estado(item);
+      const cantidad = editable
+        ? `<span class="stock-ctrl"><button data-i="${i}" data-d="-1">−</button><strong>${stockDe(item)}</strong><button data-i="${i}" data-d="1">+</button></span>`
+        : `<strong>${stockDe(item)}</strong>`;
+      return `<tr><td>${item.prod}</td><td>${item.cat}</td><td>${cantidad}</td><td>${minimoDe(item)}</td><td><span class="badge ${e.cls}">${e.txt}</span></td></tr>`;
+    }).join('');
+  }
+
+  function render() { renderTabs(); renderKpis(); renderGrafico(); renderTop(); renderTabla(); }
+
+  document.getElementById('tabs').addEventListener('click', e => {
+    const b = e.target.closest('[data-suc]');
+    if (!b) return;
+    sucursal = b.dataset.suc;
+    render();
+    if (sucursal === 'todas') Demo.toast('Elegí una sucursal para ajustar el stock a mano.');
+  });
+
+  document.getElementById('tabla').addEventListener('click', e => {
+    const b = e.target.closest('[data-d]');
+    if (!b) return;
+    const item = stock[Number(b.dataset.i)];
+    item.stock[sucursal] = Math.max(0, item.stock[sucursal] + Number(b.dataset.d));
+    Demo.guardar(CLAVE, stock);
+    renderKpis();
+    renderTabla();
+  });
+
+  document.getElementById('pedido').addEventListener('click', () => {
+    let lineas = 0;
+    stock.forEach(item => SUCURSALES.forEach(s => {
+      if (item.stock[s.id] < item.min) { item.stock[s.id] = item.min * 2; lineas++; }
+    }));
+    if (!lineas) { Demo.toast('No hay nada para pedir: todo el stock está sobre el mínimo.'); return; }
+    Demo.guardar(CLAVE, stock);
+    render();
+    Demo.toast(`📦 Pedido generado (${lineas} ítems) y enviado por mail a proveedores.`);
+  });
+
+  render();
+</script>
+</body>
+</html>
