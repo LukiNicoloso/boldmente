@@ -519,17 +519,22 @@
   }
 
   /* quienes somos */
+  /* la tarjeta del fundador va arriba a la izquierda; las cifras se centran contra los párrafos de abajo */
   .nosotros-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 4rem;
-    align-items: center;
+    column-gap: 4rem;
+    align-items: start;
   }
+  .nosotros-col { display: contents; }
+  .nosotros-col > .fundador { grid-column: 1; grid-row: 1; }
+  .nosotros-col > .nosotros-texto { grid-column: 1; }
+  .nosotros-col > .nosotros-texto:last-child { margin-bottom: 0; }
+  .nosotros-stats { grid-column: 2; grid-row: 2 / span 3; align-self: center; }
 
   @media (max-width: 700px) {
-    .nosotros-inner { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
-    #nosotros .nosotros-tagline { padding-right: calc(var(--buddy-w) + 1rem); }
-    .nosotros-stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .nosotros-inner { grid-template-columns: minmax(0, 1fr); }
+    .nosotros-stats { grid-column: 1; grid-row: auto; margin-top: 1rem; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   }
 
   .nosotros-tagline {
@@ -921,9 +926,8 @@
   .has-buddy > .section-tag,
   .has-buddy > .section-title,
   .has-buddy > .servicios-header,
-  .has-buddy > .trabajos-intro { max-width: calc(100% - var(--buddy-w) - 2rem); }
-  #nosotros .nosotros-inner { margin-top: 1rem; }
-  @media (min-width: 701px) { #nosotros .nosotros-stats { margin-top: calc(var(--buddy-w) * 0.75); } }
+  .has-buddy > .trabajos-intro,
+  .has-buddy > .nosotros-tagline { max-width: calc(100% - var(--buddy-w) - 2rem); }
   #contacto .cta-title { padding-inline: calc(var(--buddy-w) + 1rem); font-size: clamp(2.25rem, 4.6vw + 0.5rem, 5rem); }
 
   /* menú en pantallas medianas: menos espacio entre links, y sin links donde no entran */
@@ -1029,10 +1033,9 @@
     .hero-sub { font-size: 14px; margin-bottom: 2rem; }
     .hero-mascot { width: calc(118px * 240 / 262); right: -0.25rem; bottom: -0.6rem; }
     .buddy { position: relative; top: auto; right: auto; float: right; width: 118px; margin: -0.75rem -0.5rem 0.25rem 0.5rem; }
-    .has-buddy > .section-tag, .has-buddy > .section-title, .has-buddy > .servicios-header, .has-buddy > .trabajos-intro { max-width: none; }
+    .has-buddy > .section-tag, .has-buddy > .section-title, .has-buddy > .servicios-header, .has-buddy > .trabajos-intro, .has-buddy > .nosotros-tagline { max-width: none; }
     #contacto .cta-title { padding-inline: 0; font-size: clamp(1.6rem, 9vw, 5rem); }
     #nosotros .nosotros-inner { display: block; }
-    #nosotros .nosotros-tagline { padding-right: 0; }
     .fundador { gap: 0.9rem; padding: 1rem; }
     .fundador img { width: 64px; height: 64px; }
     .fundador-nombre { font-size: 18px; }
@@ -1444,9 +1447,9 @@
     </svg>
   </div>
   <p class="section-tag">Quiénes somos</p>
+  <h2 class="nosotros-tagline">Experiencia de empresa grande.<br><span class="lima">Velocidad de startup.</span></h2>
   <div class="nosotros-inner">
-    <div>
-      <h2 class="nosotros-tagline">Experiencia de empresa grande.<br><span class="lima">Velocidad de startup.</span></h2>
+    <div class="nosotros-col">
       <div class="fundador">
         <img src="/lucas-nicoloso.jpg" alt="Lucas Nicoloso, fundador de Boldmente" width="88" height="88" loading="lazy">
         <div class="fundador-info">
