@@ -519,16 +519,22 @@
   }
 
   /* quienes somos */
+  /* la tarjeta del fundador va arriba a la izquierda; las cifras se centran contra los párrafos de abajo */
   .nosotros-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 4rem;
-    align-items: center;
+    column-gap: 4rem;
+    align-items: start;
   }
+  .nosotros-col { display: contents; }
+  .nosotros-col > .fundador { grid-column: 1; grid-row: 1; }
+  .nosotros-col > .nosotros-texto { grid-column: 1; }
+  .nosotros-col > .nosotros-texto:last-child { margin-bottom: 0; }
+  .nosotros-stats { grid-column: 2; grid-row: 2 / span 3; align-self: center; }
 
   @media (max-width: 700px) {
-    .nosotros-inner { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
-    .nosotros-stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .nosotros-inner { grid-template-columns: minmax(0, 1fr); }
+    .nosotros-stats { grid-column: 1; grid-row: auto; margin-top: 1rem; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   }
 
   .nosotros-tagline {
@@ -1443,7 +1449,7 @@
   <p class="section-tag">Quiénes somos</p>
   <h2 class="nosotros-tagline">Experiencia de empresa grande.<br><span class="lima">Velocidad de startup.</span></h2>
   <div class="nosotros-inner">
-    <div>
+    <div class="nosotros-col">
       <div class="fundador">
         <img src="/lucas-nicoloso.jpg" alt="Lucas Nicoloso, fundador de Boldmente" width="88" height="88" loading="lazy">
         <div class="fundador-info">
