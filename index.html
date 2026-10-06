@@ -1668,6 +1668,12 @@
   new IntersectionObserver(([e]) => waFlotante.classList.toggle('oculto', e.isIntersecting), { rootMargin: '0px 0px -30% 0px' })
     .observe(document.getElementById('contacto'));
 
+  // El navegador interno de Instagram y Facebook vuelve a codificar el link y el mensaje
+  // precargado llega roto ("Hola%252C%2520necesito..."). Ahí se abre el chat sin texto.
+  if (/Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent)) {
+    document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a => { a.href = a.href.split('?')[0]; });
+  }
+
   // clics en WhatsApp e Instagram como eventos de Google Analytics
   document.querySelectorAll('[data-canal]').forEach(a => a.addEventListener('click', () => {
     if (typeof gtag === 'function') gtag('event', 'contacto_canal', { canal: a.dataset.canal });
