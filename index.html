@@ -76,19 +76,6 @@
   }
   .nav-links a:hover { color: #fff; }
 
-  .nav-cta {
-    background: var(--lima);
-    color: var(--negro);
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 8px 18px;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: opacity 0.2s;
-  }
-  .nav-cta:hover { opacity: 0.85; }
-
   /* hero */
   .hero {
     min-height: 100vh;
@@ -983,7 +970,7 @@
 
   /* menú en pantallas medianas: menos espacio entre links, y sin links donde no entran */
   @media (max-width: 1180px) { .nav-links { gap: 1.25rem; } }
-  @media (max-width: 1040px) { .nav-links { display: none; } }
+  @media (max-width: 939px) { .nav-links { display: none; } }
   @media (max-width: 1040px) {
     #contacto .buddy { width: 130px; }
     #contacto .cta-title { padding-inline: 146px; }
@@ -1093,7 +1080,6 @@
     #nosotros .nosotros-stats { margin-top: 2rem; }
     .logo { font-size: clamp(14px, 4.4vw, 18px); gap: 0.35rem; }
     .logo .bm { width: 30px; height: 28px; }
-    .nav-cta { padding: 8px 12px; font-size: 12px; }
 
     .section { padding: 3rem 1.25rem; }
     .section-title { font-size: clamp(1.6rem, 7.5vw, 2rem); }
@@ -1177,7 +1163,6 @@
     <li><a href="#como-funciona">Cómo funciona</a></li>
     <li><a href="#nosotros">Quiénes somos</a></li>
   </ul>
-  <a href="#contacto" class="nav-cta">Contactar →</a>
 </nav>
 
 <!-- HERO -->
